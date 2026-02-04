@@ -10,11 +10,16 @@ performance_frequency{SDL_GetPerformanceFrequency()},
 prev_counter{SDL_GetPerformanceCounter()} { //constructing private data in initializer list
 
     //load the first "level"
-    world.add_platform(0, 656, 1280, 64);
-    world.add_platform(200, 450, 400, 64);
-    world.add_platform(600, 200, 250, 64);
-    world.add_platform(0, 0, 64, 720);
-    world.add_platform(1216, 0, 64, 720);
+    //boundary walls
+    world.add_platform(0,0,30,1);
+    world.add_platform(0,0,1,10);
+    world.add_platform(30,0,1,10);
+    world.add_platform(0,10,31,1);
+
+    //platforms
+    world.add_platform(3,7,4,1);
+    world.add_platform(13,4,6,1);
+
     player = world.create_player();
 }
 

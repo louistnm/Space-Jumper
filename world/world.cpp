@@ -4,13 +4,15 @@
 #include <SDL3/SDL_rect.h>
 #include <algorithm>
 
-void World::add_platform(float x, float y, float width, float height) {
-    SDL_FRect rect{x, y, width, height};
-    platforms.push_back(rect);
-}
+World::World(int width, int height)
+    : tilemap{width,height} {}
 
-const std::vector<SDL_FRect> &World::get_platforms() const {
-    return platforms;
+void World::add_platform(float x, float y, float width, float height) {
+    for (int i{0}; i < height; ++i) {
+        for (int j{0}; j < width; ++j) {
+            tilemap(x+j, y+i) = Tile::Platform;
+        }
+    }
 }
 
 bool World::has_any_collisions(const SDL_FRect &box) const {
