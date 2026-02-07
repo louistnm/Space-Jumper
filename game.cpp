@@ -5,7 +5,7 @@
 #include "game.h"
 
 Game::Game(std::string title, int width, int height)
-    : graphics{title, width, height}, dt{1.0/60.0}, lag{0.0},
+    : graphics{title, width, height}, world{31,11}, camera{graphics, 64}, dt{1.0/60.0}, lag{0.0},
 performance_frequency{SDL_GetPerformanceFrequency()},
 prev_counter{SDL_GetPerformanceCounter()} { //constructing private data in initializer list
 
@@ -33,6 +33,7 @@ void Game::update() {
     prev_counter = now;
     while (lag >= dt) {
         world.update(dt);
+        camera.update(player->position, dt);
         lag -= dt; //accumulate lag enough so that you update world every 60th of a second
     }
     ;}
@@ -42,11 +43,11 @@ void Game::render() {
     graphics.clear();
 
     //draw world
-    for(auto &platform : world.get_platforms()) {
-        graphics.draw(platform, {0, 255, 0, 255});
-    }
-    auto [player_sprite, color] = player->get_sprite();
-    graphics.draw(player_sprite, color);
+    camera.render(world.tilemap);
+
+    //draw the player
+    auto [player_position, color] = player->get_sprite();
+    camera.render(player_position, color);
 
     //update()
     graphics.update();

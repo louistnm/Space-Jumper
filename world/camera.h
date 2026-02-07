@@ -14,7 +14,7 @@ public:
     Vec<float> world_to_screen(const Vec<float>& world_position) const;
 
     void render(const Vec<float>& position, const Color& color, bool filled=true) const;
-    void render(const Tilemap& tilemap, bool grid_on=false) const;
+    void render(const Tilemap& tilemap) const;
 
 private:
     Graphics& graphics;
