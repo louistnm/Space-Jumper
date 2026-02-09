@@ -22,7 +22,7 @@ Tilemap::Tilemap(int width, int height)
 void Tilemap::check_bounds(int x, int y) const {
     if (x >= width || x < 0 || y >= height || y < 0) {
         std::stringstream ss;
-        ss << '(' << x << ", " << y << ") is not within bunds (";
+        ss << '(' << x << ", " << y << ") is not within bounds (";
         ss << width << ", " << height << ')';
         throw std::runtime_error(ss.str());
     }
