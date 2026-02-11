@@ -31,14 +31,23 @@ Vec<float> Camera::world_to_screen(const Vec<float>& world_position) const {
     return pixel;
 }
 
+void Camera::handle_input() {
+    //TODO Check if g was pressed, then call update on the toggle
+}
+
 void Camera::update(const Vec<float>& new_location, float dt) {
     goal = new_location;
-    acceleration = (goal - location);
+    acceleration = (goal - location) * 10.0f;
     velocity += 0.5f * acceleration * dt;
     location += velocity * dt;
     velocity += 0.5f * acceleration * dt;
-    velocity *= {damping, damping};
+    velocity *= {cam_damp, cam_damp};
 
+    calculate_visible_tiles();
+}
+
+void Camera::set_location(const Vec<float>& new_location) {
+    location = new_location;
     calculate_visible_tiles();
 }
 
