@@ -12,7 +12,7 @@ Camera::Camera(Graphics& graphics, float tilesize)
 }
 
 void Camera::calculate_visible_tiles() {
-    Vec<int> num_tiles = Vec{graphics.width, graphics.height} /(2* static_cast<int>(tilesize))+Vec{1,1};
+    Vec<int> num_tiles = Vec{graphics.width, graphics.height} /(2*static_cast<int>(tilesize))+Vec{1,1};
     Vec<int> center{static_cast<int>(location.x), static_cast<int>(location.y)};
     visible_max = center + num_tiles;
     visible_min = center - num_tiles;
@@ -32,12 +32,18 @@ Vec<float> Camera::world_to_screen(const Vec<float>& world_position) const {
 }
 
 void Camera::handle_input() {
-    //TODO Check if g was pressed, then call update on the toggle
+    const bool* key_states = SDL_GetKeyboardState(NULL);
+
+    if (key_states[SDL_SCANCODE_G]) {
+        grid_toggle.flip();
+    }
+
 }
 
 void Camera::update(const Vec<float>& new_location, float dt) {
     goal = new_location;
     acceleration = (goal - location) * 10.0f;
+
     velocity += 0.5f * acceleration * dt;
     location += velocity * dt;
     velocity += 0.5f * acceleration * dt;
@@ -55,14 +61,14 @@ void Camera::render(const Vec<float>& position, const Color& color, bool filled)
     Vec<float> pixel = world_to_screen(position);
     pixel -= Vec{tilesize/2, tilesize/2}; //center on tile
     SDL_FRect rect{pixel.x, pixel.y, tilesize, tilesize};
-    graphics.draw(rect, color);
+    graphics.draw(rect, color, filled);
 }
 
 void Camera::render(const Tilemap& tilemap) const {
     int xmin = std::max(0, visible_min.x);
     int ymin = std::max(0, visible_min.y);
     int xmax = std::min(visible_max.x, tilemap.width-1);
-    int ymax = std::min(visible_max.y, tilemap.width-1);
+    int ymax = std::min(visible_max.y, tilemap.height-1);
 
     //draw tiles
     for (int y = ymin; y <= ymax; ++y) {
@@ -74,6 +80,9 @@ void Camera::render(const Tilemap& tilemap) const {
                 render(position, {255,255,255,255});
             } else {
                 render(position, {0, 127, 127, 255});
+            }
+            if (grid_toggle.on) {
+                render(position, {0,0,0,0}, false);
             }
         }
     }

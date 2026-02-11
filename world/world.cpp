@@ -1,7 +1,6 @@
 #include "world.h"
 #include "player.h"
 #include "physics.h"
-#include <SDL3/SDL_rect.h>
 #include <algorithm>
 
 World::World(int width, int height)
@@ -15,11 +14,11 @@ void World::add_platform(float x, float y, float width, float height) {
     }
 }
 
-bool World::collides(const Vec<float> position) {
+bool World::collides(const Vec<float>& position) const {
     int x = std::floor(position.x);
     int y = std::floor(position.y);
     return tilemap(x,y) == Tile::Platform;
-} //[&] gives access to the scope's variables
+}
 
 Player* World::create_player() {
     player = std::make_unique<Player>(Vec<float>{10, 5}, Vec<float>{64,64});
@@ -50,6 +49,7 @@ void World::update(float dt) {
         player->position.x = position.x;
         player->acceleration.x = acceleration.x;
     }
+
     //y collisions
     future.x = player->position.x;
     future.y = position.y;
@@ -57,8 +57,8 @@ void World::update(float dt) {
         player->velocity.y = 0;
         player->acceleration.y = gravity;
     } else {
+        player->position.y = position.y;
         player->velocity.y = velocity.y;
         player->acceleration.y = acceleration.y;
-        player->position.y = position.y;
     }
 }

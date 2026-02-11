@@ -12,7 +12,7 @@ public:
     World(int width, int height);
 
     void add_platform(float x, float y, float width, float height);
-    bool collides(const Vec<float> position);
+    bool collides(const Vec<float>& position) const;
     Player* create_player();
     void update(float dt);
 

@@ -26,6 +26,7 @@ prev_counter{SDL_GetPerformanceCounter()} { //constructing private data in initi
 
 void Game::input() {
     player->handle_input();
+    camera.handle_input();
 }
 
 void Game::update() {
@@ -40,7 +41,7 @@ void Game::update() {
         camera.update(player->position + displacement, dt);
         lag -= dt; //accumulate lag enough so that you update world every 60th of a second
     }
-    ;}
+}
 
 void Game::render() {
     //clear
