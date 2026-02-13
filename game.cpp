@@ -25,7 +25,7 @@ prev_counter{SDL_GetPerformanceCounter()} { //constructing private data in initi
 }
 
 void Game::input() {
-    player->handle_input();
+    player->input(world);
     camera.handle_input();
 }
 

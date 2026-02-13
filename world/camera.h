@@ -3,6 +3,7 @@
 #include "tilemap.h"
 #include "vec.h"
 #include "toggle.h"
+#include "physics.h"
 
 class Graphics;
 class Color;
@@ -18,6 +19,8 @@ public:
 
     void render(const Vec<float>& position, const Color& color, bool filled=true) const;
     void render(const Tilemap& tilemap) const;
+
+    Physics physics;
 
 private:
     Graphics& graphics;

@@ -47,7 +47,7 @@ void Camera::update(const Vec<float>& new_location, float dt) {
     velocity += 0.5f * acceleration * dt;
     location += velocity * dt;
     velocity += 0.5f * acceleration * dt;
-    velocity *= {cam_damp, cam_damp};
+    velocity *= {physics.damping, physics.damping};
 
     calculate_visible_tiles();
 }
