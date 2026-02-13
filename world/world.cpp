@@ -42,7 +42,7 @@ void World::move_to(Vec<float>& position, const Vec<float>& size, Vec<float>& ve
         velocity.x = 0;
     }
     // now test each corner
-    if (collides(position)) {
+    if (collides(position)) { //bottom left corner
         float dx = ceil(position.x) - position.x;
         float dy = ceil(position.y) - position.y;
 
@@ -53,38 +53,38 @@ void World::move_to(Vec<float>& position, const Vec<float>& size, Vec<float>& ve
             position.x = ceil(position.x);
             velocity.x = 0;
         }
-    } else if (collides({position.x+size.x, position.y})) {
-        float dx = floor(position.x) - position.x;
+    } else if (collides({position.x+size.x, position.y})) { //bottom right corner
+        float dx = position.x - floor(position.x);
         float dy = ceil(position.y) - position.y;
 
         if (dx > dy) {
-            position.x = floor(position.x);
-            velocity.x = 0;
-        } else {
             position.y = ceil(position.y);
             velocity.y = 0;
-        }
-    } else if (collides({position.x, position.y+size.y})) {
-        float dx = ceil(position.x) - position.x;
-        float dy = floor(position.y) - position.y;
-
-        if (dx < dy) {
-            position.x = ceil(position.x);
-            velocity.x = 0;
         } else {
-            position.y = floor(position.y);
-            velocity.y = 0;
-        }
-    } else if (collides({position.x+size.x, position.y+size.y})) {
-        float dx = floor(position.x) - position.x;
-        float dy = floor(position.y) - position.y;
-
-        if (dx > dy) {
             position.x = floor(position.x);
             velocity.x = 0;
-        } else {
+        }
+    } else if (collides({position.x, position.y+size.y})) { //top left corner
+        float dx = ceil(position.x) - position.x;
+        float dy = position.y - floor(position.y);
+
+        if (dx > dy) {
             position.y = floor(position.y);
             velocity.y = 0;
+        } else {
+            position.x = ceil(position.x);
+            velocity.x = 0;
+        }
+    } else if (collides({position.x+size.x, position.y+size.y})) { //top right corner
+        float dx =  position.x - floor(position.x);
+        float dy =  position.y - floor(position.y);
+
+        if (dx > dy) {
+            position.y = floor(position.y);
+            velocity.y = 0;
+        } else {
+            position.x = floor(position.x);
+            velocity.x = 0;
         }
     }
 }
@@ -143,16 +143,12 @@ void World::update(float dt) {
     Vec<float> future_position{position.x, player->position.y};
     Vec<float> future_velocity{velocity.x, 0};
     move_to(future_position, player->size, future_velocity);
-
-    player->position.x = future_position.x;
-    player->velocity.x = future_velocity.x;
     // now y direction after (maybe) moving in x
     future_velocity.y = velocity.y;
     future_position.y = position.y;
     move_to(future_position, player->size, future_velocity);
     // update the player position and velocity
-    player->position.y = future_position.y;
-    player->velocity.y = future_velocity.y;
-    player->acceleration.y = physics.gravity;
+    player->position = future_position;
+    player->velocity = future_velocity;
 
 }

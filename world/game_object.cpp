@@ -6,7 +6,9 @@
 #include "physics.h"
 
 GameObject::GameObject(const Vec<float>& position, const Vec<float>& size, World& world)
-    : position{position}, size{size} {}
+    : position{position}, size{size} {
+    acceleration = physics.gravity;
+}
 
 GameObject::~GameObject() {
 
@@ -15,6 +17,7 @@ GameObject::~GameObject() {
 void GameObject::input(World& world) {
     const bool *key_states = SDL_GetKeyboardState(NULL);
     acceleration.x = 0;
+    acceleration.y = physics.gravity;
     //velocity.x = velocity.y = 0;
     if (key_states[SDL_SCANCODE_A]) {
         //velocity.x += -16;
