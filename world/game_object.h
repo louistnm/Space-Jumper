@@ -4,11 +4,13 @@
 #include "graphics.h"
 #include "physics.h"
 
+class FSM; //don't need all of FSM, so forward-declaring saves time
+
 class World;
 class GameObject {
 public:
 
-    GameObject(const Vec<float>& position, const Vec<float>& size, World& world);
+    GameObject(const Vec<float>& position, const Vec<float>& size, World& world, FSM* fsm, Color color);
     ~GameObject();
 
     void input(World& world);
@@ -19,8 +21,8 @@ public:
 
 
     // Player data
-    Vec<float> position;
     Vec<float> size;
-    Vec<float> velocity, acceleration;
     Physics physics;
+    FSM* fsm;
+    Color color;
 };

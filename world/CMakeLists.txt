@@ -7,6 +7,7 @@ add_library(world
         game_object.cpp game_object.h
         action.cpp action.h
         fsm.cpp fsm.h
+        states.h states.cpp
 )
 
 target_include_directories(world PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

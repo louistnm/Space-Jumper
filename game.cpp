@@ -21,7 +21,7 @@ prev_counter{SDL_GetPerformanceCounter()} { //constructing private data in initi
     world.add_platform(13,4,6,1);
 
     player = world.create_player();
-    camera.set_location(player->position);
+    camera.set_location(player->physics.position);
 }
 
 void Game::input() {
@@ -34,11 +34,12 @@ void Game::update() {
     lag += (now - prev_counter) / (float)performance_frequency; //casting C style cause SDL is C
     prev_counter = now;
     while (lag >= dt) {
+        player->update(world, dt); //player update before world
         world.update(dt);
         //put the camera slightly ahead of the player
-        float L = length(player->velocity);
-        Vec displacement = 8.0f * player->velocity / (1.0f + L);
-        camera.update(player->position + displacement, dt);
+        float L = length(player->physics.velocity);
+        Vec displacement = 8.0f * player->physics.velocity / (1.0f + L);
+        camera.update(player->physics.position + displacement, dt);
         lag -= dt; //accumulate lag enough so that you update world every 60th of a second
     }
 }

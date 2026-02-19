@@ -1,6 +1,9 @@
 #include "world.h"
 #include "game_object.h"
 #include <algorithm>
+#include "fsm.h"
+#include "states.h"
+#include "physics.h"
 
 World::World(int width, int height)
     : tilemap{width,height} {}
@@ -20,7 +23,18 @@ bool World::collides(const Vec<float>& position) const {
 }
 
 GameObject* World::create_player() {
-    player = std::make_unique<GameObject>(Vec<float>{10, 5}, Vec<float>{1,1}, *this);
+    // Create FSM
+    Transitions transitions = {
+        {{StateType::Standing, Transition::Jump}, StateType::InAir}, //if standing and jump, go to inair
+        {{StateType::InAir, Transition::Stop}, StateType::Standing}
+    };
+    States states = {
+        {StateType::Standing, new Standing()},
+        {StateType::InAir, new InAir()}
+    };
+
+    FSM* fsm = new FSM{transitions, states, StateType::Standing};
+    player = std::make_unique<GameObject>(Vec<float>{10, 5}, Vec<float>{1,1}, *this, fsm, Color{255, 0, 0, 255});
     return player.get();
 }
 
@@ -91,45 +105,11 @@ void World::move_to(Vec<float>& position, const Vec<float>& size, Vec<float>& ve
 
 void World::update(float dt) {
     // //currently only player
-    // auto position = player->position;
-    // auto velocity = player->velocity;
-    // auto acceleration = player->acceleration;
-    //
-    // velocity += 0.5f * acceleration * dt;
-    // position += velocity*dt;
-    // velocity += 0.5f * acceleration * dt; //calculate half the velocity before position calculation and half after
-    // velocity.x *= damping;
-    //
-    // velocity.x = std::clamp(velocity.x, -terminal_velocity, terminal_velocity);
-    // velocity.y = std::clamp(velocity.y, -terminal_velocity, terminal_velocity);
-    //
-    // //check for collisions x
-    // Vec<float> future{position.x, player->position.y};
-    // if (collides(future)) {
-    //     player->velocity.x = 0;
-    //     player->acceleration.x = 0;
-    // } else {
-    //     player->velocity.x = velocity.x;
-    //     player->position.x = position.x;
-    //     player->acceleration.x = acceleration.x;
-    // }
-    //
-    // //y collisions
-    // future.x = player->position.x;
-    // future.y = position.y;
-    // if (collides(future)) {
-    //     player->velocity.y = 0;
-    //     player->acceleration.y = gravity;
-    // } else {
-    //     player->position.y = position.y;
-    //     player->velocity.y = velocity.y;
-    //     player->acceleration.y = acceleration.y;
-    // }
 
     // ... the code to update velocity and position
-    auto position = player->position;
-    auto velocity = player->velocity;
-    auto acceleration = player->acceleration;
+    auto position = player->physics.position;
+    auto velocity = player->physics.velocity;
+    auto acceleration = player->physics.acceleration;
 
     velocity += 0.5f * acceleration * dt;
     position += velocity*dt;
@@ -140,7 +120,7 @@ void World::update(float dt) {
     velocity.y = std::clamp(velocity.y, -physics.terminal_velocity, physics.terminal_velocity);
 
     // check for collisions in the world - x direction
-    Vec<float> future_position{position.x, player->position.y};
+    Vec<float> future_position{position.x, player->physics.position.y};
     Vec<float> future_velocity{velocity.x, 0};
     move_to(future_position, player->size, future_velocity);
     // now y direction after (maybe) moving in x
@@ -148,7 +128,7 @@ void World::update(float dt) {
     future_position.y = position.y;
     move_to(future_position, player->size, future_velocity);
     // update the player position and velocity
-    player->position = future_position;
-    player->velocity = future_velocity;
+    player->physics.position = future_position;
+    player->physics.velocity = future_velocity;
 
 }
